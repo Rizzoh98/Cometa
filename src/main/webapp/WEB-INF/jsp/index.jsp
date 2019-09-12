@@ -19,14 +19,13 @@
 		$.get("/articoli/list/", function(response){
 		
 			var out = "";
-			var list="";
 			
 			
 			out+='<table><tr><th>Codice</th><th>Descrizione</th><th>Quantita</th></tr>';
 			
-			$.each(response, function (i,list){
-				out+='<tr><th>  </th><th> list </th><th>  </th></tr>';
-			});
+			for(var articolo of response) {
+				out+='<tr><td>  </td><td>'+articolo+'</td><td>  </td></tr>';
+			}
 			
 			out +='</table>';
 		

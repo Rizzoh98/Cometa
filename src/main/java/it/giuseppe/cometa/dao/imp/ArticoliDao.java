@@ -25,7 +25,7 @@ public class ArticoliDao extends NamedParameterJdbcDaoSupport implements IArtico
 	@Override
 	public List<String> getAllArticoli() {
 
-		String sql = "SELECT DISTINCT A.descrizione FROM articoli A LEFT JOIN lotti L WHERE A.id = L.id_articolo";
+		String sql = "SELECT A.descrizione FROM articoli A LEFT JOIN lotti L ON A.id = L.id_articolo";
 		List<String> articoli=  getJdbcTemplate().queryForList(sql, String.class);
 		return articoli;
 	}
