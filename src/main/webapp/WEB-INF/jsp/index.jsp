@@ -42,7 +42,23 @@
 	<h1>Articoli</h1>
 	<br>
 	<div id="articoli"></div>
-
+	
+	<table>
+	  <thead>
+	  <tr>
+	    <th>Codice</th>
+	    <th>Descrizione</th>
+	    <th>Quantita</th>
+	  </tr>
+	  </thead>
+	  <tbody id="myTable">
+	  <tr>
+	    <td></td>
+	    <td></td>
+	    <td></td>
+	  </tr>
+	  </tbody>
+	</table>
 	
 </body>
 </html>
