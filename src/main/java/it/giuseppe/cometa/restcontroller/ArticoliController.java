@@ -13,17 +13,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.giuseppe.cometa.dao.IArticoliDao;
+import it.giuseppe.cometa.domain.Articolo;
 
 @RestController
 public class ArticoliController {
-	
+
 	@Autowired
 	IArticoliDao articoliDao;
 
 	@RequestMapping("/articoli/list/")
-	public List<String> getArticoliList() {
+	public List<Articolo> getArticoliList() {
 
-		List<String> articoli = new ArrayList<String>();
+		List<Articolo> articoli = new ArrayList<Articolo>();
 
 		try {
 			articoli = articoliDao.getAllArticoli();
@@ -34,7 +35,7 @@ public class ArticoliController {
 
 		return articoli;
 	}
-	
+
 	@RequestMapping("/articoli/list/details/")
 	public List<String> getDetailArticolo(int id) {
 
@@ -49,7 +50,7 @@ public class ArticoliController {
 
 		return articoli;
 	}
-	
+
 	@RequestMapping("/articolo/add/")
 	public ResponseEntity<String> addArticolo(@RequestParam("addArticolo") String addArticolo) {
 
@@ -61,9 +62,10 @@ public class ArticoliController {
 		}
 
 	}
-	
+
 	@RequestMapping("/artiocolo/update/")
-	public ResponseEntity<Integer> updateArticolo(@PathParam("codice") Integer codice, @RequestParam("descrizione") String descrizione) {
+	public ResponseEntity<Integer> updateArticolo(@PathParam("codice") Integer codice,
+			@RequestParam("descrizione") String descrizione) {
 
 		if (codice != 0) {
 			articoliDao.updateArticolo(codice, descrizione);
@@ -73,9 +75,10 @@ public class ArticoliController {
 		}
 
 	}
-	
+
 	@RequestMapping("/filtro/desc/articolo/")
-	public ResponseEntity<String> filtroDescrizioneArticolo(@RequestParam("descrizioneArticolo") String descrizioneArticolo) {
+	public ResponseEntity<String> filtroDescrizioneArticolo(
+			@RequestParam("descrizioneArticolo") String descrizioneArticolo) {
 
 		if (descrizioneArticolo != "") {
 			articoliDao.filtroDescrizioneArticoli(descrizioneArticolo);
@@ -84,7 +87,7 @@ public class ArticoliController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
 	@RequestMapping("/filtro/cod/articolo/")
 	public ResponseEntity<Integer> filtroCodiceArticolo(@PathParam("codice") Integer codice) {
 

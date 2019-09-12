@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
 import org.springframework.stereotype.Service;
 
 import it.giuseppe.cometa.dao.IArticoliDao;
+import it.giuseppe.cometa.domain.Articolo;
 
 @Service
 public class ArticoliDao extends NamedParameterJdbcDaoSupport implements IArticoliDao{
@@ -23,10 +24,11 @@ public class ArticoliDao extends NamedParameterJdbcDaoSupport implements IArtico
 	
 	
 	@Override
-	public List<String> getAllArticoli() {
+	public List<Articolo> getAllArticoli() {
 
-		String sql = "SELECT A.descrizione FROM articoli A LEFT JOIN lotti L ON A.id = L.id_articolo";
-		List<String> articoli=  getJdbcTemplate().queryForList(sql, String.class);
+		String sql = "SELECT A.id, A.codice, A.descrizione, sum(COALESCE(L.quantita,0)) quantita FROM articoli A LEFT JOIN lotti L ON A.id = L.id_articolo GROUP BY A.id, A.codice, A.descrizione";
+		BeanPropertyRowMapper<Articolo> rm = new BeanPropertyRowMapper<Articolo>(Articolo.class);
+		List<Articolo> articoli=  getJdbcTemplate().query(sql, rm);
 		return articoli;
 	}
 	
@@ -36,7 +38,7 @@ public class ArticoliDao extends NamedParameterJdbcDaoSupport implements IArtico
 		String sql = "SELECT codice, descrizione, L.quantita FROM articoli A LEFT JOIN lotti L ON L.id_articolo = A.id WHERE A.id = ?";
 		//MapSqlParameterSource params = new MapSqlParameterSource();
 		//params.addValue("id", id);
-		//BeanPropertyRowMapper<String> rm = new BeanPropertyRowMapper<String>(String.class);
+		//
 		//List<String> detailsArticoli = getNamedParameterJdbcTemplate().query(sql, params, rm);
 		
 		List<String> detailsArticoli = getJdbcTemplate().queryForList(sql,new Object[]{id}, String.class);
