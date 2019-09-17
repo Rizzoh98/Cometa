@@ -33,59 +33,36 @@ public class ArticoliDao extends NamedParameterJdbcDaoSupport implements IArtico
 	}
 	
 	@Override
-	public List<String> getAllDetailsArticoli(int id) {
+	public List<Articolo> getAllDetailsArticoli(int codice) {
 
-		String sql = "SELECT codice, descrizione, L.quantita FROM articoli A LEFT JOIN lotti L ON L.id_articolo = A.id WHERE A.id = ?";
-		//MapSqlParameterSource params = new MapSqlParameterSource();
-		//params.addValue("id", id);
-		//
-		//List<String> detailsArticoli = getNamedParameterJdbcTemplate().query(sql, params, rm);
-		
-		List<String> detailsArticoli = getJdbcTemplate().queryForList(sql,new Object[]{id}, String.class);
-		
+		String sql = "SELECT codice, descrizione, sum(COALESCE(L.quantita,0)) quantita FROM articoli A LEFT JOIN lotti L ON L.id_articolo = A.id WHERE A.codice = :codice";
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("codice", codice);
+		BeanPropertyRowMapper<Articolo> rm = new BeanPropertyRowMapper<Articolo>(Articolo.class);
+		List<Articolo> detailsArticoli = getNamedParameterJdbcTemplate().query(sql, params, rm);
 		return detailsArticoli;
 	} 
 	
-	public void updateArticolo(int codice, String newDescrizione) {
-
-		String sql = "UPDATE articolo SET descrizione = :newDescrizione WHERE codice = :codice";
+	public List<Articolo> getArticolifiltrati (String filtroTxt, int option) {
+		
+		List<Articolo> articoliFiltrati = null;
 		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("newDescrizione", newDescrizione);
-		params.addValue("codice", codice);
-		getNamedParameterJdbcTemplate().update(sql, params);
-
-	}
-
-	public void addArticolo(String addArticolo) {
-
-		String sql = "INSERT INTO articoli descrizione values :addArticolo";
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("addArticolo", addArticolo);
-		getNamedParameterJdbcTemplate().update(sql, params);
-
-	}
-	
-	public List<String> filtroDescrizioneArticoli (String descrizioneFiltro) {
+		BeanPropertyRowMapper<Articolo> rm = new BeanPropertyRowMapper<Articolo>(Articolo.class);
 		
-		String sql = "SELECT DISTINCT A.descrizione, A.codice FROM cometa.articoli A LEFT JOIN lotti L WHERE A.id = L.id_articolo and A.descrizione LIKE " + "'%" + ":descrizioneFiltro" + "%'";
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("descrizioneFiltro", descrizioneFiltro);
-		BeanPropertyRowMapper<String> rm = new BeanPropertyRowMapper<String>(String.class);
-		List<String> articoliFiltroDescrizione = getNamedParameterJdbcTemplate().query(sql, params, rm);
+		if (option == 0) 
+		{
+			String sql = "SELECT DISTINCT A.descrizione, A.codice FROM cometa.articoli A LEFT JOIN lotti L ON A.id = L.id_articolo WHERE A.codice LIKE " + "'%" + ":filtroTxt" + "%'";
+			params.addValue("filtroTxt", filtroTxt);
+			articoliFiltrati = getNamedParameterJdbcTemplate().query(sql, params, rm);
+		}
+		else 
+		{
+			String sql = "SELECT DISTINCT A.descrizione, A.codice FROM cometa.articoli A LEFT JOIN lotti L ON A.id = L.id_articolo WHERE A.descrizione LIKE " + "'%" + ":filtroTxt" + "%'";
+			params.addValue("filtroTxt", filtroTxt);
+			articoliFiltrati = getNamedParameterJdbcTemplate().query(sql, params, rm);
+		}
 		
-		return articoliFiltroDescrizione;
-	}
-	
-	public List<String> filtroCodiceArticoli (int codiceFiltro){
-		
-		String sql = "SELECT DISTINCT A.descrizione, A.codice FROM cometa.articoli A LEFT JOIN lotti L WHERE A.id = L.id_articolo and A.codice LIKE " + "'%" + ":codiceFiltro" + "%'";
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("codiceFiltro", codiceFiltro);
-		BeanPropertyRowMapper<String> rm = new BeanPropertyRowMapper<String>(String.class);
-		List<String> articoliFiltroCodice = getNamedParameterJdbcTemplate().query(sql, params, rm);
-		
-		return articoliFiltroCodice;
-		
+		return articoliFiltrati;
 	}
 	
 }

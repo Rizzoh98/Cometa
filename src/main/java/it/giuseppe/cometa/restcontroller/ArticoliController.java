@@ -37,12 +37,27 @@ public class ArticoliController {
 	}
 
 	@RequestMapping("/articoli/list/details/")
-	public List<String> getDetailArticolo(int id) {
+	public List<Articolo> getDetailArticolo(@RequestParam("codice") int codice) {
 
-		List<String> articoli = new ArrayList<String>();
+		List<Articolo> articoli = new ArrayList<Articolo>();
 
 		try {
-			articoli = articoliDao.getAllDetailsArticoli(id);
+			articoli = articoliDao.getAllDetailsArticoli(codice);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return articoli;
+	}
+	
+	@RequestMapping("filtro/articoli/list/")
+	public List<Articolo> getFiltroArticolo(@RequestParam("filtroTxt") String filtroTxt, @RequestParam("option") int option) {
+
+		List<Articolo> articoli = new ArrayList<Articolo>();
+
+		try {
+			articoli = articoliDao.getArticolifiltrati(filtroTxt, option);
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -51,52 +66,4 @@ public class ArticoliController {
 		return articoli;
 	}
 
-	@RequestMapping("/articolo/add/")
-	public ResponseEntity<String> addArticolo(@RequestParam("addArticolo") String addArticolo) {
-
-		if (addArticolo != "") {
-			articoliDao.addArticolo(addArticolo);
-			return new ResponseEntity<>(addArticolo, HttpStatus.ACCEPTED);
-		} else {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-
-	}
-
-	@RequestMapping("/artiocolo/update/")
-	public ResponseEntity<Integer> updateArticolo(@PathParam("codice") Integer codice,
-			@RequestParam("descrizione") String descrizione) {
-
-		if (codice != 0) {
-			articoliDao.updateArticolo(codice, descrizione);
-			return new ResponseEntity<>(codice, HttpStatus.ACCEPTED);
-		} else {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-
-	}
-
-	@RequestMapping("/filtro/desc/articolo/")
-	public ResponseEntity<String> filtroDescrizioneArticolo(
-			@RequestParam("descrizioneArticolo") String descrizioneArticolo) {
-
-		if (descrizioneArticolo != "") {
-			articoliDao.filtroDescrizioneArticoli(descrizioneArticolo);
-			return new ResponseEntity<>(descrizioneArticolo, HttpStatus.ACCEPTED);
-		} else {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
-
-	@RequestMapping("/filtro/cod/articolo/")
-	public ResponseEntity<Integer> filtroCodiceArticolo(@PathParam("codice") Integer codice) {
-
-		if (codice != null) {
-			articoliDao.filtroCodiceArticoli(codice);
-			return new ResponseEntity<>(codice, HttpStatus.ACCEPTED);
-		} else {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-
-	}
 }

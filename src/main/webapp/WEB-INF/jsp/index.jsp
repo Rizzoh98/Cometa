@@ -11,23 +11,79 @@
 	$(document).ready(function() {
 	
 		getArticoliList();
-
+			
 	});
-
+	
+	$(document).on('mouseenter','tr.riga',function(){
+		$(this).css("color", "white");
+	});
+	
+	$(document).on('mouseleave','tr.riga',function(){
+		$(this).css("color", "black");
+	});
+	
+	<!-- DETTAGLI ARTICOLO -->
+	$(document).on('click','tr.riga',function(){
+		var codice = $(this).find('td.codice').text();
+		getDettagliArticoli(codice);
+	});
+	
+	<!-- FILTRI -->
+	$(document).on('click','#filtroCodice',function(){
+		var filtroTxt = $(this).find('#filtroTxt').text();
+		var option = 0;
+		getFiltroArticoli(filtroTxt, option);
+	});
+	
+	$(document).on('click','#filtroDescrizione',function(){
+		var filtroTxt = $(this).find('#filtroTxt').text();
+		var option = 1;
+		getFiltroArticoli(filtroTxt, option);
+	});
+	
+	<!-- LISTA ARTICOLI -->
 	function getArticoliList ()
 	{
 		$.get("/articoli/list/", function(response){
 		
 			var out = "";
-			
-			
-			out+='<table><tr><th>Codice</th><th>Descrizione</th><th>Quantita</th></tr>';
+			out +='<tr><th><font size="5">Codice</font></th><th><font size="5">Descrizione</font></th><th><font size="5">Quantita</font></th></tr>';
 			
 			for(var articolo of response) {
-				out+='<tr><td>  </td><td>'+articolo+'</td><td>  </td></tr>';
+				out+='<tr class="riga" align = "center"><td class ="codice">'+articolo.codice+'</td><td>'+articolo.descrizione+'</td><td>'+articolo.quantita+'</td></tr>';
 			}
+		
+			$("#articoli").html(out);
+		});
+	}
+	
+	<!-- DETTAGLI ARTICOLO -->
+	function getDettagliArticoli (codice)
+	{
+		$.get("/articoli/list/details/?codice=" + codice, function(response){
+		
+			var out = "";
+			out +='<tr><th><font size="5">Codice</font></th><th><font size="5">Descrizione</font></th><th><font size="5">Quantita</font></th></tr>';
 			
-			out +='</table>';
+			for(var articolo of response) {
+				out+='<tr class="riga" align = "center"><td class ="codice">'+articolo.codice+'</td><td>'+articolo.descrizione+'</td><td>'+articolo.quantita+'</td></tr>';
+			}
+		
+			$("#articoli").html(out);
+		});
+	}
+	
+	<!-- FILTRO ARTICOLI -->
+	function getFiltroArticoli (filtroTxt, option)
+	{
+		$.get("filtro/articoli/list/?filtroTxt=" + filtroTxt + "&option=" + option, function(response){
+		
+			var out = "";
+			out +='<tr><th><font size="5">Codice</font></th><th><font size="5">Descrizione</font></th><th><font size="5">Quantita</font></th></tr>';
+			
+			for(var articolo of response) {
+				out+='<tr class="riga" align = "center"><td class ="codice">'+articolo.codice+'</td><td>'+articolo.descrizione+'</td><td>'+articolo.quantita+'</td></tr>';
+			}
 		
 			$("#articoli").html(out);
 		});
@@ -35,29 +91,22 @@
 
 </script>
 
-
-
 </head>
-<body>
-	<h1>Articoli</h1>
-	<br>
-	<div id="articoli"></div>
+
+<body style = "background :#008080">
 	
-	<table>
-	  <thead>
-	  <tr>
-	    <th>Codice</th>
-	    <th>Descrizione</th>
-	    <th>Quantita</th>
-	  </tr>
-	  </thead>
-	  <tbody id="myTable">
-	  <tr>
-	    <td></td>
-	    <td></td>
-	    <td></td>
-	  </tr>
-	  </tbody>
+	<h1 align ="center">Lista articoli</h1><br>
+	
+	<div  align="center">
+		<form>
+	  	<input type="text" id="filtroTxt" placeholder="Inserisci il valore del filtro">
+	  	<input type="button" onclick="getArticoliListCodice()" id="filtroCodice" value = "Filtra per codice">
+	  	<input type="button" onclick="getArticoliListDescrizione()" id="filtroDescrizione" value = "Filtra per descrizione">
+	  	<input type="button" onclick="getArticoliList()" id="resetPage" value = "Elimina filtri">
+	  	</form>
+	</div>
+	<br>
+	<table align ="center" id="articoli">
 	</table>
 	
 </body>
